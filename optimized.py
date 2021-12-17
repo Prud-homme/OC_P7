@@ -37,9 +37,7 @@ def parcours(listes, gains, noeud, portefeuille, liste, gain):
             benefice = cout * ACTIONS[noeud][1] / 100
             liste_1 = liste.copy()
             liste_1.append(1)
-            parcours(
-                listes, gains, noeud + 1, portefeuille - cout, liste_1, gain + benefice
-            )
+            parcours(listes, gains, noeud + 1, portefeuille - cout, liste_1, gain + benefice)
 
         liste_0 = liste.copy()
         liste_0.append(0)
