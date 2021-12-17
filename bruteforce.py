@@ -23,39 +23,49 @@ ACTIONS = [
     (114, 18),
 ]
 
+def action(combinaison):
+    somme=0
+    gain=0
+    for i in range(len(combinaison)):
+        somme += ACTIONS[i][0]*combinaison[i]
+        gain += ACTIONS[i][0]*ACTIONS[i][1]*combinaison[i]/100
+    return somme <= 500, gain
 
-def parcours(listes, gains, noeud, portefeuille, liste, gain):
-    if noeud >= 20:
-        listes.append(liste)
-        gains.append(gain)
+def bruteforce():
+    listes=[]
+    gains=[]
+    for i1 in (0,1):
+        for i2 in (0,1):
+            for i3 in (0,1):
+                for i4 in (0,1):
+                    for i5 in (0,1):
+                        for i6 in (0,1):
+                            for i7 in (0,1):
+                                for i8 in (0,1):
+                                    for i9 in (0,1):
+                                        for i10 in (0,1):
+                                            for i11 in (0,1):
+                                                for i12 in (0,1):
+                                                    for i13 in (0,1):
+                                                        for i14 in (0,1):
+                                                            for i15 in (0,1):
+                                                                for i16 in (0,1):
+                                                                    for i17 in (0,1):
+                                                                        for i18 in (0,1):
+                                                                            for i19 in (0,1):
+                                                                                for i20 in (0,1):
+                                                                                    combinaison = [i1, i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20]
+                                                                                    booleen, gain = action(combinaison)
+                                                                                    if booleen:
+                                                                                        listes.append(combinaison)
+                                                                                        gains.append(gain)
+    return listes,gains
 
-    else:
-        cout = ACTIONS[noeud][0]
-
-        if portefeuille - cout > 0:
-            benefice = cout * ACTIONS[noeud][1] / 100
-            liste_1 = liste.copy()
-            liste_1.append(1)
-            parcours(
-                listes, gains, noeud + 1, portefeuille - cout, liste_1, gain + benefice
-            )
-
-        liste_0 = liste.copy()
-        liste_0.append(0)
-        parcours(listes, gains, noeud + 1, portefeuille, liste_0, gain)
 
 
 def run():
-    gains = []
-    listes = []
-
-    noeud = 0
-    portefeuille = 500
-    liste = []
-    gain = 0
-    parcours(listes, gains, noeud, portefeuille, liste, gain)
-    return listes, gains
-
+    listes2, gains2 = bruteforce()
+    return listes2, gains2
 
 def display(listes, gains):
     indexs = list(range(len(gains)))
@@ -70,8 +80,14 @@ def display(listes, gains):
 Actions à acheter :
 {', '.join(chaine)}
 
-Gain total d'investissement : {round(gains[list2[0]], 2)}€
-    """
+Gain total d'investissement : {round(gains[list2[0]], 2)}€"""
+    
+    '''
+    nb = 2500
+    temp = [listes[elt] for elt in list2[:nb]]
+    aux = [sum(x) for x in zip(*temp)]
+    print([round(x/nb*100,1) for x in aux])
+    '''
     return message
 
 
