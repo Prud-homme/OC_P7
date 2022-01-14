@@ -1,11 +1,7 @@
 import time
 import utils
 from settings import MAX_EXPENSES, ACTIONS
-from algorithms.bruteforce import run_nested_for as run_bruteforce_nested_for
-from algorithms.bruteforce import bruteforce_invest_while as run_bruteforce_while
-from algorithms.bruteforce import bruteforce_invest_whilev2 as run_bruteforce_whilev2
-from algorithms.bruteforce import run_while_numpy as run_bruteforce_whilenp
-from algorithms.bruteforce import run_while_thread as run_bruteforce_while_thread
+from algorithms.bruteforce import *
 from algorithms.optimized import run as run_optimized
 
 
@@ -48,7 +44,7 @@ print("--- %s seconds ---" % (end_time))
 print(utils.display_investment(actions, profits, investment_mix))
 '''
 
-
+'''##############
 start_time = time.time()
 investment_mix, profits = run_bruteforce_while(actions, MAX_EXPENSES)
 end_time = time.time() - start_time
@@ -57,6 +53,10 @@ start_time = time.time()
 print(utils.display_investment(actions, profits, investment_mix))
 end_time = time.time() - start_time
 print("--- %s seconds ---" % (end_time))
+'''#################
+
+
+
 '''
 start_time = time.time()
 investment_mix, profits = run_bruteforce_while_thread(actions, MAX_EXPENSES)
@@ -89,7 +89,7 @@ print("--- %s seconds ---" % (end_time))
 print(somme)
 '''
 
-
+'''
 
 
 start_time = time.time()
@@ -100,7 +100,7 @@ start_time = time.time()
 print(utils.display_investment_np(names, profits))
 end_time = time.time() - start_time
 print("--- %s seconds ---" % (end_time))
-
+'''
 
 '''
 start_time = time.time()
@@ -109,4 +109,52 @@ end_time = time.time() - start_time
 print("--- %s seconds ---" % (end_time))
 print(profits)
 print(utils.display_investment(actions, profits, investment_mix))
+'''
+'''
+
+start_time = time.time()
+profits = run3(cost,profit,MAX_EXPENSES)
+end_time = time.time() - start_time
+print("--- %s seconds ---" % (end_time))
+'''
+
+
+
+
+
+
+
+
+start_time = time.time()
+msg = numpy_bruteforce_without_sale(names,cost,profit,MAX_EXPENSES)
+end_time = time.time() - start_time
+print("--- %s seconds ---" % (end_time))
+print(msg)
+'''
+start_time = time.time()
+msg = run5(names,cost,profit,MAX_EXPENSES)
+end_time = time.time() - start_time
+print("--- %s seconds ---" % (end_time))
+print(msg)
+'''
+
+
+
+
+
+import numpy as np
+profit = np.array([1+elt for elt in cost])
+
+'''
+start_time = time.time()
+msg = run4(names,cost,profit,MAX_EXPENSES)
+end_time = time.time() - start_time
+print("--- %s seconds ---" % (end_time))
+print(msg)
+
+start_time = time.time()
+msg = run5(names,cost,profit,MAX_EXPENSES)
+end_time = time.time() - start_time
+print("--- %s seconds ---" % (end_time))
+print(msg)
 '''
