@@ -1,6 +1,6 @@
 from __future__ import annotations
 import csv
-
+import numpy as np
 
 def get_data(csvfile: str) -> list[tuple[str, float, float]]:
     """
@@ -8,12 +8,33 @@ def get_data(csvfile: str) -> list[tuple[str, float, float]]:
     the name of a stock, its price and its profit percentage.
     The first line of the csv file is ignored.
     """
+    data = []
     with open(csvfile, "r") as file:
         reader = csv.reader(file)
         next(reader)
         for row in reader:
-            data.append((row[0], float(row[1]), float(row[2])))
+            if float(row[1]) > 0 and float(row[2]) > 0:
+                data.append((row[0], float(row[1]), float(row[2])))
     return data
+
+
+def get_data_numpy(csvfile: str) -> list[tuple[str, float, float]]:
+    """
+    Return a list of tuples where each tuple contains
+    the name of a stock, its price and its profit percentage.
+    The first line of the csv file is ignored.
+    """
+    names = np.array([], dtype = str)
+    cost, profit = np.array([], dtype = float), np.array([], dtype = float)
+    with open(csvfile, "r") as file:
+        reader = csv.reader(file)
+        next(reader)
+        for row in reader:
+            if float(row[1]) > 0 and float(row[2]) > 0:
+                names = np.append(names, row[0])
+                cost = np.append(cost, float(row[1]))
+                profit = np.append(profit, float(row[2]))
+    return names, cost, profit
 
 
 def sort_by_profit(profits: list[int]) -> list[int]:
@@ -51,6 +72,25 @@ def display_investment(
 {', '.join(chaine)}
 
 Gain total d'investissement : {round(profits[best_choice], 2)}€"""
+    return message
+
+
+def display_investment_np(names, profits):
+    """
+    Return a string containing the actions to take in order to
+    maximize the profit and the profit obtained.
+    """
+    best_choice = np.argmax(np.sum(profits, axis=1))
+    chaine = [
+        f"{names[i]}"
+        for i in range(len(names))
+        if profits[best_choice][i] > 0
+    ]
+
+    message = f"""Actions à acheter :
+{', '.join(chaine)}
+
+Gain total d'investissement : {round(sum(profits[best_choice]), 2)}€"""
     return message
 
 
