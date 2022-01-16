@@ -1,213 +1,59 @@
 from __future__ import annotations
-import numpy as np
 
 
-def vanilla_bruteforce_without_sale(names, cost, profit, max_expenses):
+def obtain_possible_investment(costs: list[float], wallet: float) -> list[list[float]]:
     """
-    The function calculates for all possible investments the profit
-    and the expense associated with each of these investments.
-    Returns a list of investments whose expense does not exceed
-    a maximum value and a list of associated profit
+    Generates the set of possible investments for different shares within a maximum expenditure.
+    We have the cost of each action as well as the maximum amount that should not be exceeded.
+    It returns a list where each element is a list of floats that correspond to the purchase cost of the shares.
     """
-    nb_actions = len(cost)
-
+    nb_shares = len(costs)
     action_i = 0
-    
+
     expenses = [[]]
-    
+
     index = 0
     choice = 0
     new_expenses = []
-    while action_i < nb_actions:
-        
+    while action_i < nb_shares:
+
         new_expense = expenses[index].copy()
-        cost_i = cost[action_i]
-        
-        if sum(new_expense) + cost_i <= max_expenses:
-            new_expense.append(choice * cost_i)
+        cost_i = choice * costs[action_i]
+
+        if sum(new_expense) + cost_i <= wallet:
+            new_expense.append(cost_i)
             new_expenses.append(new_expense)
 
         if choice == 1:
             choice -= 1
             index += 1
         else:
-            choice += 1            
+            choice += 1
 
         if index == len(expenses):
             action_i += 1
-
-            index=0
+            index = 0
             expenses = new_expenses
             new_expenses = []
 
-    profits = [sum([expenses[i][j] * profit[j] / 100 for j in range(len(profit))]) for i in range(len(expenses))]
-    best_choice = profits.index(max(profits))
-
-    message = f"""Actions à acheter :
-{', '.join([names[i] for i in range(len(expenses[best_choice])) if expenses[best_choice][i]>0])}
-
-Gain total d'investissement : {round(profits[best_choice],2)}€"""
-    return message
+    return expenses
 
 
-def numpy_bruteforce_without_sale(names,cost, profit, max_expenses):
+def bruteforce(
+    names: list[str], costs: list[float], profits: list[float], wallet: float
+) -> str:
     """
-    The function calculates for all possible investments the profit
-    and the expense associated with each of these investments.
-    Returns a list of investments whose expense does not exceed
-    a maximum value and a list of associated profit
+    Calls obtain_possible_investment() to calculate itteratively the set of feasible investments
+    and, after finding the best investment among this list, generates a printable message
+    containing the profit obtained and the name of the shares to buy for this investment
     """
-    nb_actions = len(cost)
+    expenses = obtain_possible_investment(costs, wallet)
 
-    action_i = 0
-    
-    expenses = [[]]
-    
-    index = 0
-    choice = 0
-    new_expenses = []
-    while action_i < nb_actions:
-        
-        new_expense = expenses[index].copy()
-        cost_i = cost[action_i]
-        
-        if sum(new_expense) + cost_i <= max_expenses:
-            new_expense.append(choice * cost_i)
-            new_expenses.append(new_expense)
+    investment_earnings = [
+        sum([expenses[i][j] * profits[j] / 100 for j in range(len(profits))])
+        for i in range(len(expenses))
+    ]
 
-        if choice == 1:
-            choice -= 1
-            index += 1
-        else:
-            choice += 1            
-
-        if index == len(expenses):
-            action_i += 1
-
-            index=0
-            expenses = new_expenses
-            new_expenses = []
-
-    profits = np.sum(np.multiply(np.array(expenses), profit/100), axis=1)
-    best_choice = np.argmax(profits)
-
-    message = f"""Actions à acheter :
-{', '.join(names[np.array(expenses[best_choice])>0])}
-
-Gain total d'investissement : {np.round(profits[best_choice],2)}€"""
-    return message
-
-
-
-
-
-
-
-
-
-
-
-def numpy_bruteforce_with_sale(names,cost, profit, max_expenses):
-    """
-    The function calculates for all possible investments the profit
-    and the expense associated with each of these investments.
-    Returns a list of investments whose expense does not exceed
-    a maximum value and a list of associated profit
-    """
-    nb_actions = len(cost)
-
-    action_i = 0
-    
-    expenses = [[]]
-    
-    index = 0
-    choice = 0
-    new_expenses = []
-    while action_i < nb_actions:
-        
-        new_expense = expenses[index].copy()
-        cost_i = cost[action_i]
-        
-        if sum(new_expense) + cost_i <= max_expenses:
-            new_expense.append(choice * cost_i)
-            new_expenses.append(new_expense)
-
-        if choice == 1:
-            choice -= 1
-            index += 1
-        else:
-            choice += 1            
-
-        if index == len(expenses):
-            action_i += 1
-
-            index=0
-            expenses = new_expenses
-            new_expenses = []
-
-    profits = np.sum(np.multiply(np.array(expenses), profit/100), axis=1) + 500 - np.sum(np.array(expenses), axis=1)
-    
-    best_choice = np.argmax(profits)
-
-    message = f"""Actions à acheter :
-{', '.join(names[np.array(expenses[best_choice])>0])}
-
-Gain total d'investissement : {np.round(profits[best_choice],2)}€"""
-    return message
-    #profits = [[expenses[i][j] * profit[j] for j in range(len(profit))] for i in range(len(expenses))]
-    #return profits
-
-
-
-def vanilla_bruteforce_with_sale(names,cost, profit, max_expenses):
-    """
-    The function calculates for all possible investments the profit
-    and the expense associated with each of these investments.
-    Returns a list of investments whose expense does not exceed
-    a maximum value and a list of associated profit
-    """
-    nb_actions = len(cost)
-
-    action_i = 0
-    
-    expenses = [[]]
-    
-    index = 0
-    choice = 0
-    new_expenses = []
-    while action_i < nb_actions:
-        
-        new_expense = expenses[index].copy()
-        cost_i = cost[action_i]
-        
-        if sum(new_expense) + cost_i <= max_expenses:
-            new_expense.append(choice * cost_i)
-            new_expenses.append(new_expense)
-
-        if choice == 1:
-            choice -= 1
-            index += 1
-        else:
-            choice += 1            
-
-        if index == len(expenses):
-            action_i += 1
-
-            index=0
-            expenses = new_expenses
-            new_expenses = []
-
-    profits = [sum([expenses[i][j] * profit[j] / 100 for j in range(len(profit))]) + 500 - sum(expenses[i]) for i in range(len(expenses))]
-    best_choice = profits.index(max(profits))
-
-    message = f"""Actions à acheter :
-{', '.join([names[i] for i in range(len(expenses[best_choice])) if expenses[best_choice][i]>0])}
-
-Gain total d'investissement : {round(profits[best_choice],2)}€"""
-    return message
-
-
-
-
-
-
+    best_choice = investment_earnings.index(max(investment_earnings))
+    return f"""[Meilleur investissement] Gain de \x1b[35m{round(investment_earnings[best_choice],2)}€\x1b[0m pour l'achat de:
+\x1b[32m{', '.join([names[i] for i in range(len(expenses[best_choice])) if expenses[best_choice][i]>0])}\x1b[0m"""
