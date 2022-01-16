@@ -1,134 +1,42 @@
 from __future__ import annotations
 import csv
-import numpy as np
+import gc
 
 def get_data(csvfile: str) -> list[tuple[str, float, float]]:
     """
-    Return a list of tuples where each tuple contains
-    the name of a stock, its price and its profit percentage.
+    Return three list that contains the name of a stock, its price and its profit percentage.
     The first line of the csv file is ignored.
     """
-    data = []
+    names, costs, profits = [], [], []
     with open(csvfile, "r") as file:
         reader = csv.reader(file)
         next(reader)
         for row in reader:
-            if float(row[1]) > 0 and float(row[2]) > 0:
-                data.append((row[0], float(row[1]), float(row[2])))
-    return data
+            if len(row[0])>0 and float(row[1]) > 0 and float(row[2]) > 0:
+                names.append(row[0])
+                costs.append(float(row[1]))
+                profits.append(float(row[2]))
+    return names, costs, profits
 
 
-def get_data_numpy(csvfile: str) -> list[tuple[str, float, float]]:
+def extract_best_shares(names: list[str], costs: list[float], profits: list[float], nb_shares: int=-1) -> tuple[list[str], list[float], list[float]]:
     """
-    Return a list of tuples where each tuple contains
-    the name of a stock, its price and its profit percentage.
-    The first line of the csv file is ignored.
+    After having zipped the three lists provided as input, we sort by decreasing order of profits
+    and return them by keeping only a certain number of elements
     """
-    names = np.array([], dtype = str)
-    cost, profit = np.array([], dtype = float), np.array([], dtype = float)
-    with open(csvfile, "r") as file:
-        reader = csv.reader(file)
-        next(reader)
-        for row in reader:
-            if float(row[1]) > 0 and float(row[2]) > 0:
-                names = np.append(names, row[0])
-                cost = np.append(cost, float(row[1]))
-                profit = np.append(profit, float(row[2]))
-    return names, cost, profit
+    if nb_shares<len(names) and nb_shares>0:
+        zipped = zip(profits, costs, names)
+        sorted_desc = sorted(zipped, reverse=True)
+        profits, costs, names = [list(elt)[:nb_shares] for elt in zip(*sorted_desc)]
+    return names, costs, profits
 
 
-def sort_by_profit(profits: list[int]) -> list[int]:
+def get_shares(csvfile:str, nb_shares:int=-1):
     """
-    The function zips the list of profits with a list of indexes of the same size.
-    A sorting by descending order of the profits is done on this zip.
-    The index list allows to keep track of the sorting.
-    The list of sorted indexes is returned.
+    We recover from a csv a number of actions returned in the form of three lists (names, costs, profits)
+    We free the non-referenced memory
     """
-    indexs = list(range(len(profits)))
-    zipped = zip(profits, indexs)
-    sorted_by_profit = sorted(zipped, reverse=True)
-    tuples = zip(*sorted_by_profit)
-    sort_profits, sort_choices = [list(elt) for elt in tuples]
-    return sort_choices
-
-
-def display_investment(
-    actions: list[tuple[str, int, int]],
-    profits: list[int],
-    investment_mix: list[list[int]],
-) -> str:
-    """
-    Return a string containing the actions to take in order to
-    maximize the profit and the profit obtained.
-    """
-    best_choice = sort_by_profit(profits)[0]
-    chaine = [
-        f"Action {actions[i][0]}"
-        for i in range(len(actions))
-        if investment_mix[best_choice][i] == 1
-    ]
-
-    message = f"""Actions à acheter :
-{', '.join(chaine)}
-
-Gain total d'investissement : {round(profits[best_choice], 2)}€"""
-    return message
-
-
-def display_investment_np(names, profits):
-    """
-    Return a string containing the actions to take in order to
-    maximize the profit and the profit obtained.
-    """
-    best_choice = np.argmax(np.sum(profits, axis=1))
-    chaine = [
-        f"{names[i]}"
-        for i in range(len(names))
-        if profits[best_choice][i] > 0
-    ]
-
-    message = f"""Actions à acheter :
-{', '.join(chaine)}
-
-Gain total d'investissement : {round(sum(profits[best_choice]), 2)}€"""
-    return message
-
-
-def display_distributions(
-    actions: list[tuple[str, int, int]],
-    profits: list[int],
-    investment_mix: list[list[int]],
-    nb: int,
-) -> str:
-    """
-    Return a string containing the actions to take in order to
-    maximize the profit and the profit obtained.
-    """
-    if nb > len(investment_mix):
-        return None
-    best_choices = sort_by_profit(profits)[:nb]
-    investments = [investment_mix[choice] for choice in best_choices]
-    distributions = [sum(x) for x in zip(*investments)]
-    chaine = [
-        f"{actions[i]} : {round(distributions[i]/nb*100,1)}"
-        for i in range(len(actions))
-    ]
-
-    return "\n".join(chaine)
-
-
-def conditions_remove(
-    actions: list[tuple[str, int, int]]
-) -> list[tuple[str, int, int]]:
-    """
-    Generates a new action list where for each action, it must yield
-    more than 5% or more than 10% if its cost is greater than 100
-    """
-    new_actions = []
-    for i in range(len(actions)):
-        action_cost = actions[i][1]
-        action_profit = actions[i][2]
-        if action_profit > 5 or action_profit > 10 and action_cost > 100:
-            new_actions.append(actions[i])
-
-    return new_actions
+    names, costs, profits = get_data(csvfile)
+    names, costs, profits = extract_best_shares(names, costs, profits, nb_shares)
+    gc.collect()
+    return names, costs, profits
