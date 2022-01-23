@@ -42,7 +42,7 @@ When the virtual environment is activated and you are placed in the folder where
 ```
 
 Then a window will appear to select your file with shares. Once the program is finished, the recommended investment appears in the console but is also available in a text file.
-This text file is located in the same place as your data.
+This text file is located in the same place as your data. The data directory provides examples of input and output data.
 
 🗒️ *Note: Depending on the installation of python it is possible that the `python3` command is not recognized under windows. In this case, you will have to replace `python3` by `python`.*
 
