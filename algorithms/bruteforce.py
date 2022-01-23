@@ -5,7 +5,8 @@ def obtain_possible_investment(costs: list[float], wallet: float) -> list[list[f
     """
     Generates the set of possible investments for different shares within a maximum expenditure.
     We have the cost of each action as well as the maximum amount that should not be exceeded.
-    It returns a list where each element is a list of floats that correspond to the purchase cost of the shares.
+    It returns a list where each element is a list of floats that correspond
+    to the purchase cost of the shares.
     """
     nb_shares = len(costs)
     action_i = 0
@@ -36,7 +37,7 @@ def obtain_possible_investment(costs: list[float], wallet: float) -> list[list[f
             expenses = new_expenses
             new_expenses = []
 
-    return expenses
+    return [expense for expense in expenses if sum(expense) > 0]
 
 
 def bruteforce(
@@ -50,10 +51,22 @@ def bruteforce(
     expenses = obtain_possible_investment(costs, wallet)
 
     investment_earnings = [
-        sum([expenses[i][j] * profits[j] / 100 for j in range(len(profits))])
+        sum([expenses[i][j] * profits[j] for j in range(len(profits))]) / 100
         for i in range(len(expenses))
     ]
 
-    best_choice = investment_earnings.index(max(investment_earnings))
-    return f"""[Meilleur investissement] Gain de \x1b[35m{round(investment_earnings[best_choice],2)}€\x1b[0m pour l'achat de:
-\x1b[32m{', '.join([names[i] for i in range(len(expenses[best_choice])) if expenses[best_choice][i]>0])}\x1b[0m"""
+    best_invest = investment_earnings.index(max(investment_earnings))
+    profit = round(investment_earnings[best_invest], 2)
+    shares = "\n".join(
+        [
+            names[i]
+            for i in range(len(expenses[best_invest]))
+            if expenses[best_invest][i] > 0
+        ]
+    )
+
+    return f"""Recommended investment:
+{shares}
+
+Total cost: {sum(expenses[best_invest])}€
+Total return: {profit}€"""
