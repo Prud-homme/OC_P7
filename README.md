@@ -3,7 +3,6 @@
 
 ## Menu
 
-* [Overview](#overview)
 * [Program setup](#program-setup)
 * [Program execution](#program-execution)
 * [flake8](#flake8)
